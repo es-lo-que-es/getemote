@@ -8,5 +8,6 @@ __pycache__/
 *$py.class
 *.swp
 libs/*
+*.out
 
 *~
