@@ -9,6 +9,4 @@ __pycache__/
 *.swp
 libs/*
 
-tokens/
-
 *~
