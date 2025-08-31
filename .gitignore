@@ -1,0 +1,14 @@
+build/
+.cache/
+
+*.kra
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.swp
+libs/*
+
+proto/
+
+*~
