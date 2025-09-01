@@ -1,12 +1,16 @@
 #include "request_handler.h"
 #include "stdio.h"
+#include "assert.h"
 
 
+static bool REQUEST_HANDLER_INITIALISED = false;
 static RequestHandler s_request_handler = { 0 };
 
 
 void release_request(Request *req)
 {
+   assert(REQUEST_HANDLER_INITIALISED);
+
    RequestHandler *self = &s_request_handler;
    curl_multi_remove_handle(self->mhandle, req->ehandle);
    erase(&self->requests, (uintptr_t)req->ehandle);
@@ -16,6 +20,7 @@ void release_request(Request *req)
 
 void release_request_handler()
 {
+   assert(REQUEST_HANDLER_INITIALISED);
    RequestHandler *self = &s_request_handler;
 
    for( Request **el = first(&self->requests); el != end(&self->requests); el = next(&self->requests, el) ) {
@@ -24,6 +29,7 @@ void release_request_handler()
       _free_request(req);
    }
 
+   REQUEST_HANDLER_INITIALISED = false;
    curl_multi_cleanup(self->mhandle);
    cleanup(&self->requests);
 
@@ -45,6 +51,8 @@ bool init_request_handler()
       return false;
    }
 
+   REQUEST_HANDLER_INITIALISED = true;
+
    init(&self->requests);
    return true;
 }
@@ -65,12 +73,16 @@ static void process_message(RequestHandler *self, struct CURLMsg *msg)
       req->failed = true;
    }
 
+   // INFO: make sure all responses are NULL terminated
+   if ( !push(&req->resp, 0) ) if ( size(&req->resp) > 0 ) *last(&req->resp) = 0; 
+
    req->done = true;
 }
 
 
 void handle_requests()
 {
+   assert(REQUEST_HANDLER_INITIALISED);
    RequestHandler *self = &s_request_handler;
 
    int running_handles = 0;
@@ -93,6 +105,7 @@ void handle_requests()
 
 Request *make_get_request(const char *url, struct curl_slist *headers)
 {
+   assert(REQUEST_HANDLER_INITIALISED);
    RequestHandler *self = &s_request_handler;
 
    Request *req = _alloc_get_request(url, headers);
@@ -113,6 +126,7 @@ Request *make_get_request(const char *url, struct curl_slist *headers)
 
 Request *make_post_request(const char *url, const char *data, struct curl_slist *headers)
 {
+   assert(REQUEST_HANDLER_INITIALISED);
    RequestHandler *self = &s_request_handler;
 
    Request *req = _alloc_post_request(url, data, headers);
@@ -133,6 +147,8 @@ Request *make_post_request(const char *url, const char *data, struct curl_slist 
 
 int active_requests()
 {
+   assert(REQUEST_HANDLER_INITIALISED);
+
    RequestHandler *self = &s_request_handler;
    return size(&self->requests);
 }
