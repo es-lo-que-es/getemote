@@ -9,6 +9,7 @@ typedef struct RequestHandler {
 } RequestHandler;
 
 
+Request *make_post_request(const char *url, const char *data, struct curl_slist *headers);
 Request *make_get_request(const char *url, struct curl_slist *headers);
 void release_request(Request *request);
 

@@ -10,21 +10,26 @@ int main()
 
    printf("active requests: %d\n", active_requests());
    handle_requests();
-   Request *req = make_get_request("https://example.com", NULL);
 
-   if ( req != NULL ) {
+   Request *req0 = make_get_request("https://example.com", NULL);
+   Request *req1 = make_post_request("https://post.requestcatcher.com/test", "name=daniel&project=curl", NULL);
+
+   if ( req0 != NULL && req1 != NULL ) {
 
       printf("active requests: %d\n", active_requests());
-      while ( !req->done ) {
+      while ( !req0->done || !req1->done ) {
          handle_requests();
          sleep(1);
       }
 
-      if ( req->failed ) printf("request has failed!\n");
-      if ( push(&req->resp, 0) ) printf("resp: '%s'\n", get(&req->resp, 0));
+      if ( req0->failed ) printf("request0 has failed!\n");
+      if ( push(&req0->resp, 0) ) printf("resp: '%s'\n", get(&req0->resp, 0));
+
+      if ( req1->failed ) printf("request1 has failed!\n");
+      if ( push(&req1->resp, 0) ) printf("resp: '%s'\n", get(&req1->resp, 0));
    }
 
-   release_request(req);
+   release_request(req0);
    printf("active requests: %d\n", active_requests());
 
    handle_requests();

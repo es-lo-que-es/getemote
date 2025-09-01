@@ -23,7 +23,7 @@ static bool init_get_request(Request *self, const char *url, struct curl_slist *
 
    curl_easy_setopt(self->ehandle, CURLOPT_WRITEFUNCTION, curl_write_cb);
    curl_easy_setopt(self->ehandle, CURLOPT_WRITEDATA, (void *)&self->resp);
-   curl_easy_setopt(self->ehandle,  CURLOPT_HTTPHEADER, headers);
+   curl_easy_setopt(self->ehandle, CURLOPT_HTTPHEADER, headers);
    curl_easy_setopt(self->ehandle, CURLOPT_URL, url);
    init(&self->resp);
 
@@ -37,6 +37,38 @@ Request *_alloc_get_request(const char *url, struct curl_slist *headers)
    if ( req == NULL ) return NULL;
 
    if ( !init_get_request(req, url, headers) ) {
+      free(req); return NULL;
+   }
+
+   return req;
+}
+
+
+// INFO: i could DRY it but i dont feel like i should
+static bool init_post_request(Request *self, const char *url, const char *data, struct curl_slist *headers)
+{
+   memset(self, 0, sizeof(Request));
+
+   self->ehandle = curl_easy_init();
+   if ( self->ehandle == NULL ) return false;
+
+   curl_easy_setopt(self->ehandle, CURLOPT_WRITEFUNCTION, curl_write_cb);
+   curl_easy_setopt(self->ehandle, CURLOPT_WRITEDATA, (void *)&self->resp);
+   curl_easy_setopt(self->ehandle, CURLOPT_HTTPHEADER, headers);
+   curl_easy_setopt(self->ehandle, CURLOPT_POSTFIELDS, data);
+   curl_easy_setopt(self->ehandle, CURLOPT_URL, url);
+   init(&self->resp);
+
+   return true;
+}
+
+
+Request *_alloc_post_request(const char *url, const char *data, struct curl_slist *headers)
+{
+   Request *req = malloc(sizeof(Request));
+   if ( req == NULL ) return NULL;
+
+   if ( !init_post_request(req, url, data, headers) ) {
       free(req); return NULL;
    }
 

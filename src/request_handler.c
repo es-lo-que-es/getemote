@@ -111,6 +111,26 @@ Request *make_get_request(const char *url, struct curl_slist *headers)
 }
 
 
+Request *make_post_request(const char *url, const char *data, struct curl_slist *headers)
+{
+   RequestHandler *self = &s_request_handler;
+
+   Request *req = _alloc_post_request(url, data, headers);
+   if ( req == NULL ) return NULL;
+
+   int err = curl_multi_add_handle(self->mhandle, req->ehandle);
+   if ( err ) { _free_request(req); return NULL; }
+
+   if ( !insert(&self->requests, (uintptr_t)req->ehandle, req) ) {
+      curl_multi_remove_handle(self->mhandle, req->ehandle);
+      _free_request(req);
+      return NULL;
+   }
+
+   return req;
+}
+
+
 int active_requests()
 {
    RequestHandler *self = &s_request_handler;
