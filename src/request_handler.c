@@ -1,0 +1,118 @@
+#include "request_handler.h"
+#include "stdio.h"
+
+
+static RequestHandler s_request_handler = { 0 };
+
+
+void release_request(Request *req)
+{
+   RequestHandler *self = &s_request_handler;
+   curl_multi_remove_handle(self->mhandle, req->ehandle);
+   erase(&self->requests, (uintptr_t)req->ehandle);
+   _free_request(req);
+}
+
+
+void release_request_handler()
+{
+   RequestHandler *self = &s_request_handler;
+
+   for( Request **el = first(&self->requests); el != end(&self->requests); el = next(&self->requests, el) ) {
+      Request *req = *el;
+      curl_multi_remove_handle(self->mhandle, req->ehandle);
+      _free_request(req);
+   }
+
+   curl_multi_cleanup(self->mhandle);
+   cleanup(&self->requests);
+
+   curl_global_cleanup();
+}
+
+
+bool init_request_handler()
+{
+   RequestHandler *self = &s_request_handler;
+   memset(self, 0, sizeof(RequestHandler));
+
+   curl_global_init(CURL_GLOBAL_ALL);
+   self->mhandle = curl_multi_init();
+
+   if ( self->mhandle == NULL ) {
+      fprintf(stderr, "failed to init curl multi handle\n");
+      curl_global_cleanup();
+      return false;
+   }
+
+   init(&self->requests);
+   return true;
+}
+
+
+static void process_message(RequestHandler *self, struct CURLMsg *msg)
+{
+   CURL *ehandle = msg->easy_handle;
+   curl_multi_remove_handle(self->mhandle, ehandle);
+
+   Request *req = *get(&self->requests, (uintptr_t)ehandle);
+   
+   // this should never happen since all handles are asociated with their request objects
+   if ( req == NULL ) return curl_easy_cleanup(ehandle);
+
+   if ( msg->data.result != CURLE_OK ) {
+      fprintf(stderr, "request failed with error: '%s'\n", curl_easy_strerror(msg->data.result));
+      req->failed = true;
+   }
+
+   req->done = true;
+}
+
+
+void handle_requests()
+{
+   RequestHandler *self = &s_request_handler;
+
+   int running_handles = 0;
+   curl_multi_perform(self->mhandle, &running_handles);
+
+   // this exists only cus i dont like do->while loops
+   struct CURLMsg stub = { 0 }; 
+   struct CURLMsg *msg = &stub;
+   int qlen = 0;
+
+   while ( msg != NULL ) {
+      msg = curl_multi_info_read(self->mhandle, &qlen);
+
+      if ( msg != NULL && msg->msg == CURLMSG_DONE ) {
+         process_message(self, msg);
+      }
+   }
+}
+
+
+Request *make_get_request(const char *url, struct curl_slist *headers)
+{
+   RequestHandler *self = &s_request_handler;
+
+   Request *req = _alloc_get_request(url, headers);
+   if ( req == NULL ) return NULL;
+
+   int err = curl_multi_add_handle(self->mhandle, req->ehandle);
+   if ( err ) { _free_request(req); return NULL; }
+
+   if ( !insert(&self->requests, (uintptr_t)req->ehandle, req) ) {
+      curl_multi_remove_handle(self->mhandle, req->ehandle);
+      _free_request(req);
+      return NULL;
+   }
+
+   return req;
+}
+
+
+int active_requests()
+{
+   RequestHandler *self = &s_request_handler;
+   return size(&self->requests);
+}
