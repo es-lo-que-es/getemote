@@ -99,41 +99,27 @@ static void parse_auth_response(AuthHandler *self)
 
    json_error_t err = { 0 };
    json_t *doc = json_loads(get(&data, 0), 0, &err);
- 
-   if ( doc == NULL ) {
-      fprintf(stderr, "failed to parse auth response. line:%d. msg: %s\n", err.line, err.text);
-      return;
-   }
-
-   if ( !json_is_object(doc) ) {
-      fprintf(stderr, "auth response was expected to be a json object\n");
-      goto exit;
-   }
+   if ( doc == NULL ) goto error;
 
    json_t *token = json_object_get(doc, "access_token");
-
-   if ( !json_is_string(token) ) {
-      fprintf(stderr, "access_token was excpected to be a string\n");
-      goto exit;
-   }
-
    const char *str = json_string_value(token);
+   if ( str == NULL ) goto error;
 
    const char *token_field = TextFormat("Authorization: Bearer %s", str);
    struct curl_slist *h0 = curl_slist_append(NULL, token_field);
-   if ( h0 == NULL ) goto exit;
+   if ( h0 == NULL ) goto error;
 
    const char *id_field = TextFormat("Client-Id: %s", self->client_id);
    struct curl_slist *h1 = curl_slist_append(h0, id_field);
-
-   if ( h1 == NULL ) {
-      curl_slist_free_all(h0);
-      goto exit;
-   }
+   if ( h1 == NULL ) { curl_slist_free_all(h0); goto error; }
 
    self->auth_headers = h1;
+   json_decref(doc);
 
-exit:
+   return;
+
+error:
+   fprintf(stderr, "failed to parse auth response: '%s'\n", get(&data, 0));
    json_decref(doc);
 }
 

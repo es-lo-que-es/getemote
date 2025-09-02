@@ -1,7 +1,9 @@
 #include "stdio.h"
 
+#include "twitch_requests.h"
 #include "auth_handler.h"
 #include "unistd.h"
+#include "raylib.h"
 
 
 static void print_slist(struct curl_slist *list)
@@ -27,12 +29,33 @@ int main()
       status = wait_for_authorisation();
       sleep(1);
    }
+   
+   Request *req = request_broadcaster_id("twitch");
 
-   print_slist(get_auth_headers());
+   while ( !req->done ) {
+      handle_requests();
+      sleep(1);
+   }
+
+   char *id = parse_broadcaster_id(req->resp);
+   if ( id ) printf("twitch broadcaster id: %s\n", id);
+
+   req = request_emote_list(id);
+   while ( !req->done ) {
+      handle_requests();
+      sleep(1);
+   }
+   
+   vec(EmoteInfo) emotes = parse_emote_list(req->resp);
+   for ( int i = 0; i < size(&emotes); ++i ) {
+      printf("name: %s; url: [%s]\n", get(&emotes, i)->name, get(&emotes, i)->url);
+   }
+
+   cleanup(&emotes);
+   free(id);
 
    release_request_handler();
    release_auth_handler();
 
-   printf("app runs\n");
    return 0;
 }

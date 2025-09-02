@@ -7,6 +7,10 @@ set (
    me_src
    src/request_handler.c
    src/auth_handler.c
+
+   src/twitch_requests.c
+   src/emote_info.c
+
    src/request.c
    src/main.c
 )
