@@ -20,6 +20,8 @@ set (
    ${req_src}
 
    src/emote_info.c
+   src/emote.c
+
    src/resources.c
    src/config.c
    src/main.c
@@ -27,6 +29,7 @@ set (
 )
 
 file(COPY tokens DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(run ${app_src})
 target_link_libraries(run curl raylib jansson)
