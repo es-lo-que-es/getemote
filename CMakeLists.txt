@@ -14,4 +14,4 @@ set (
 file(COPY tokens DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(run ${me_src})
-target_link_libraries(run curl raylib)
+target_link_libraries(run curl raylib jansson)

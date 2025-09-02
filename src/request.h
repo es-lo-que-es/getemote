@@ -16,6 +16,7 @@ typedef struct Request {
 
 Request *_alloc_post_request(const char *url, const char *data, struct curl_slist *headers);
 Request *_alloc_get_request(const char *url, struct curl_slist *headers);
+bool empty_response(Request *request);
 void _free_request(Request *request);
 
 

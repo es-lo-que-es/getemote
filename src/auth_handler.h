@@ -10,7 +10,6 @@ typedef struct AuthHandler {
 
    char client_id[AUTH_BUFFER_SIZE];
    char client_secret[AUTH_BUFFER_SIZE];
-   char post_data[AUTH_BUFFER_SIZE * 4];
 
    struct curl_slist *auth_headers;
    Request *auth_req;

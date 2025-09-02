@@ -1,5 +1,6 @@
 #include "auth_handler.h"
 
+#include "jansson.h"
 #include "assert.h"
 #include "raylib.h"
 #include "stdio.h"
@@ -54,24 +55,6 @@ static bool read_file(const char *path, char *buffer, int max)
 }
 
 
-/*
-static bool populate_client_headers(AuthHandler *self)
-{
-   struct curl_slist *h0 = append_file_to_slist(CLIENT_ID_PATH, "client_id", NULL);
-   if ( h0 == NULL ) return false;
-
-   struct curl_slist *h1h0 = append_file_to_slist(CLIENT_SECRET_PATH, "client_secret", h0);
-   if ( h1h0 == NULL ) { curl_slist_free_all(h0); return false; }
-
-   struct curl_slist *h2h1h0 = curl_slist_append(h1h0, GRANT_TYPE_STR);
-   if ( h2h1h0 == NULL ) { curl_slist_free_all(h1h0); return false; }
-
-   self->client_headers = h2h1h0;
-   return true;
-}
-*/
-
-
 bool init_auth_handler()
 {
    AuthHandler *self = &s_auth_handler;
@@ -83,10 +66,7 @@ bool init_auth_handler()
    const char *data = TextFormat("client_id=%s&client_secret=%s&%s", 
          self->client_id, self->client_secret, GRANT_TYPE_STR);
 
-   const int len = strlen(data) >= sizeof(self->post_data) ? sizeof(self->post_data) - 1 : strlen(data);
-   memcpy(self->post_data, data, strlen(data));
-
-   self->auth_req = make_post_request(TOKEN_REQ_URL, self->post_data, NULL);
+   self->auth_req = make_post_request(TOKEN_REQ_URL, data, NULL);
    if ( self->auth_req == NULL ) return false;
    
    AUTH_HANDLER_INITIALISED = true;
@@ -94,31 +74,95 @@ bool init_auth_handler()
 }
 
 
+static int process_empty_response(AuthHandler *self)
+{
+   fprintf(stderr, "auth request has received an empty response\n");
+   self->failed = true;
+
+   return AuthFailed;
+}
+
+
+static int process_auth_failure(AuthHandler *self)
+{
+   fprintf(stderr, "auth request has failed :( \n");
+   fprintf(stderr, "reason: '%s'\n", get(&self->auth_req->resp, 0));
+   self->failed = true;
+
+   return AuthFailed;
+}
+
+
+static void parse_auth_response(AuthHandler *self)
+{
+   vec(uint8_t) data = self->auth_req->resp;
+
+   json_error_t err = { 0 };
+   json_t *doc = json_loads(get(&data, 0), 0, &err);
+ 
+   if ( doc == NULL ) {
+      fprintf(stderr, "failed to parse auth response. line:%d. msg: %s\n", err.line, err.text);
+      return;
+   }
+
+   if ( !json_is_object(doc) ) {
+      fprintf(stderr, "auth response was expected to be a json object\n");
+      goto exit;
+   }
+
+   json_t *token = json_object_get(doc, "access_token");
+
+   if ( !json_is_string(token) ) {
+      fprintf(stderr, "access_token was excpected to be a string\n");
+      goto exit;
+   }
+
+   const char *str = json_string_value(token);
+
+   const char *token_field = TextFormat("Authorization: Bearer %s", str);
+   struct curl_slist *h0 = curl_slist_append(NULL, token_field);
+   if ( h0 == NULL ) goto exit;
+
+   const char *id_field = TextFormat("Client-Id: %s", self->client_id);
+   struct curl_slist *h1 = curl_slist_append(h0, id_field);
+
+   if ( h1 == NULL ) {
+      curl_slist_free_all(h0);
+      goto exit;
+   }
+
+   self->auth_headers = h1;
+
+exit:
+   json_decref(doc);
+}
+
+
+static int process_auth_success(AuthHandler *self)
+{
+   parse_auth_response(self);
+   return AuthSuccess;
+}
+
+
 enum AuthState wait_for_authorisation()
 {
+   int status = AuthWait;
    assert(AUTH_HANDLER_INITIALISED);
 
    AuthHandler *self = &s_auth_handler;
-   if ( self->done ) return AuthSuccess;
    if ( self->failed ) return AuthFailed;
+   if ( self->done ) return AuthSuccess;
 
    handle_requests();
    if ( self->auth_req->done ) {
-   
-      if ( self->auth_req->failed ) {
-         fprintf(stderr, "auth request has failed: \n");
-         fprintf(stderr, "reason: '%s'\n", get(&self->auth_req->resp, 0));
-         release_request(self->auth_req);
-         self->failed = true;
-         return AuthFailed;
-      } else {
-         printf("auth success!\n");
-         printf("resp: '%s'\n", get(&self->auth_req->resp, 0));
-         // TODO: parse auth response to create auth headers
-         self->done = true;
-         return AuthSuccess;
-      }
+      if ( empty_response(self->auth_req) ) status = process_empty_response(self);
+      else if ( self->auth_req->failed ) status = process_auth_failure(self);
+      else status = process_auth_success(self);
+      
+      release_request(self->auth_req);
+      self->done = true;
    }
 
-   return AuthWait;
+   return status;
 }

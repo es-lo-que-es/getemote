@@ -28,6 +28,8 @@ int main()
       sleep(1);
    }
 
+   print_slist(get_auth_headers());
+
    release_request_handler();
    release_auth_handler();
 

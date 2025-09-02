@@ -55,7 +55,9 @@ static bool init_post_request(Request *self, const char *url, const char *data, 
    curl_easy_setopt(self->ehandle, CURLOPT_WRITEFUNCTION, curl_write_cb);
    curl_easy_setopt(self->ehandle, CURLOPT_WRITEDATA, (void *)&self->resp);
    curl_easy_setopt(self->ehandle, CURLOPT_HTTPHEADER, headers);
-   curl_easy_setopt(self->ehandle, CURLOPT_POSTFIELDS, data);
+
+   // INFO: copy post fields so i can reuse that memory or smth (instead of CURLOPT_POSTFIELDS)
+   curl_easy_setopt(self->ehandle, CURLOPT_COPYPOSTFIELDS, data);
    curl_easy_setopt(self->ehandle, CURLOPT_URL, url);
    init(&self->resp);
 
@@ -81,4 +83,10 @@ void _free_request(Request *self)
    curl_easy_cleanup(self->ehandle);
    cleanup(&self->resp);
    free(self);
+}
+
+
+bool empty_response(Request *self)
+{
+   return size(&self->resp) == 0;
 }

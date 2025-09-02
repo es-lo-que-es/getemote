@@ -73,8 +73,9 @@ static void process_message(RequestHandler *self, struct CURLMsg *msg)
       req->failed = true;
    }
 
-   // INFO: make sure all responses are NULL terminated
+   // INFO: make sure all responses are NULL terminated 
    if ( !push(&req->resp, 0) ) if ( size(&req->resp) > 0 ) *last(&req->resp) = 0; 
+   // WARNING: empty response + bad alloc could cause issues ._.
 
    req->done = true;
 }
