@@ -30,6 +30,7 @@ set (
 
 file(COPY tokens DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+make_directory(${CMAKE_CURRENT_BINARY_DIR}/cache)
 
 add_executable(run ${app_src})
 target_link_libraries(run curl raylib jansson)

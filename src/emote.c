@@ -22,12 +22,31 @@ static void set_failed_image(Emote *self)
 }
 
 
+static bool load_cached_image(Emote *self, const char *name)
+{
+   const char *path = TextFormat("%scache/%s.png", GetApplicationDirectory(), name);
+
+   self->image = LoadImage(path);
+   self->texture = LoadTextureFromImage(self->image);
+   if ( self->texture.width == 0 ) return false;
+   
+   self->loaded = true;
+   return true;
+}
+
+
 void init_emote(Emote *self, EmoteInfo info)
 {
    memset(self, 0, sizeof(Emote));
 
-   self->req = make_get_request(info.url, NULL);
-   if ( self->req == NULL ) set_failed_image(self);
+   if ( !load_cached_image(self, info.name) ) {
+
+      self->req = make_get_request(info.url, NULL);
+
+      if ( self->req == NULL ) {
+         set_failed_image(self);
+      }
+   }
 
    self->info = info;
 }
@@ -39,6 +58,17 @@ static void draw_loading_animation(Rectangle r)
    // ...
 
    DrawRectangleRec(r, GREEN);
+}
+
+
+static void cache_request_data(Emote *self)
+{
+   FILE *file = fopen(TextFormat("%scache/%s.png", GetApplicationDirectory(), self->info.name), "wb");
+   if ( file == NULL ) return;
+
+   vec(uint8_t) data = self->req->resp;
+   fwrite(get(&data, 0), 1, size(&data), file);
+   fclose(file);
 }
 
 
@@ -55,6 +85,8 @@ static void draw_loading_emote(Emote *self, Rectangle r)
    self->texture = LoadTextureFromImage(self->image);
 
    if ( self->texture.width == 0 ) return set_failed_image(self);
+   cache_request_data(self);
+
    self->loaded = true;
 }
 

@@ -32,7 +32,7 @@ bool init_app(App *self)
    init_window();
 
    EmoteInfo info = { 0 };
-   init_emote_info(&info, "https://static-cdn.jtvnw.net/emoticons/v2/303256306/static/light/3.0", "shroudChill");
+   init_emote_info(&info, "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_9c38e116e5e84f51b338ca0779ba7c2c/static/light/3.0", "twitchDino");
    init_emote(&emote, info);
 
    return true;

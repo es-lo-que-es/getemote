@@ -10,6 +10,7 @@ static RequestHandler s_request_handler = { 0 };
 void release_request(Request *req)
 {
    assert(REQUEST_HANDLER_INITIALISED);
+   if ( req == NULL ) return;
 
    RequestHandler *self = &s_request_handler;
    curl_multi_remove_handle(self->mhandle, req->ehandle);
