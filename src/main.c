@@ -1,29 +1,10 @@
-#include "stdio.h"
-
-#include "twitch_requests.h"
-#include "auth_handler.h"
-#include "unistd.h"
+#include "app.h"
 #include "raylib.h"
-
-
-static void print_slist(struct curl_slist *list)
-{
-   while ( list ) {
-      printf("%s\n", list->data);
-      list = list->next;
-   }
-}
 
 
 int main()
 {
-   if ( !init_request_handler() ) return -1;
-   
-   if ( !init_auth_handler() ) {
-      release_request_handler(); 
-      return -1;
-   }
-
+   /*
    int status = AuthWait; 
    while ( status == AuthWait ) {
       status = wait_for_authorisation();
@@ -53,9 +34,13 @@ int main()
 
    cleanup(&emotes);
    free(id);
+   */
+   
+   App app = { 0 };
+   if ( !init_app(&app) ) return -1;
 
-   release_request_handler();
-   release_auth_handler();
+   while ( !WindowShouldClose() ) run_app(&app);
+   release_app(&app);
 
    return 0;
 }
