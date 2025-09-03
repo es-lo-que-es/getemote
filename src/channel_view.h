@@ -7,8 +7,11 @@
 
 
 typedef struct ChannelView {
+
    ChannelLookup lookup;
    EmoteList emotes;
+   int yoffset;
+
 } ChannelView;
 
 

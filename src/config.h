@@ -8,9 +8,10 @@ typedef struct Config {
 
    int window_height;
    int window_width;
+   float emote_padding;
 
+   Color fg_alt, bg_alt;
    Color fg, bg;
-   Color bg_alt;
 
 } Config;
 

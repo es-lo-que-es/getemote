@@ -20,3 +20,32 @@ void draw_loading_animation(Rectangle r, Color fg)
    DrawCircleV(b, drad, fg);
    DrawCircleV(c, drad, fg);
 }
+
+
+Rectangle scale_rec(Rectangle r, float scale)
+{
+   const float h = r.height * scale;
+   const float w = r.width * scale;
+
+   const Rectangle res = { 
+      r.x + (r.width - w) * 0.5,
+      r.y + (r.height - h) * 0.5,
+      w, h
+   };
+
+   return res;
+}
+
+
+Rectangle pad_rec(Rectangle r, float value)
+{
+   const float h = r.height - value * 2;
+   const float w = r.width - value * 2;
+
+   const Rectangle res = { 
+      r.x + value, r.y + value,
+      w, h
+   };
+
+   return res;
+}

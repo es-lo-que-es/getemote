@@ -94,7 +94,13 @@ static void draw_loading_emote(Emote *self, Rectangle r)
 
 void draw_emote(Emote *self, Rectangle r)
 {
-   if ( !self->loaded ) return draw_loading_emote(self, r);
+
+   bool hover = CheckCollisionPointRec(GetMousePosition(), r);
+   if ( hover ) DrawRectangleRec(r, gconfig->fg_alt);
+
+   const Rectangle sr = scale_rec(r, 1.0f - gconfig->emote_padding);
+   if ( !self->loaded ) return draw_loading_emote(self, sr);
+
    const Rectangle src = { 0, 0, self->texture.width, self->texture.height };
-   DrawTexturePro(self->texture, src, r, Vector2Zero(), 0, WHITE);
+   DrawTexturePro(self->texture, src, sr, Vector2Zero(), 0, WHITE);
 }
