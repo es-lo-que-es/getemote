@@ -2,8 +2,8 @@
 #define TWITCH_REQUESTS_HEADER_H
 
 #include "cc.h"
-#include "emote_info.h"
 #include "request_handler.h"
+#include "emotes/emote_info.h"
 
 Request *request_broadcaster_id(const char *username);
 Request *request_emote_list(const char *id);

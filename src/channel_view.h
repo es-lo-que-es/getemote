@@ -2,7 +2,7 @@
 #define CHANNEL_VIEW_HEADER_H
 
 #include "reqs/channel_lookup.h"
-#include "emote_list.h"
+#include "emotes/emote_list.h"
 #include "raylib.h"
 
 

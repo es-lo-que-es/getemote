@@ -2,7 +2,6 @@
 
 #include "util.h"
 #include "raylib.h"
-#include "emote.h"
 #include "config.h"
 #include "resources.h"
 #include "reqs/auth_handler.h"

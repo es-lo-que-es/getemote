@@ -7,7 +7,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set (
    req_src
-
    src/reqs/channel_lookup.c
    src/reqs/request_handler.c
    src/reqs/auth_handler.c
@@ -15,13 +14,20 @@ set (
    src/reqs/request.c
 )
 
+
+set (
+   emote_src
+   src/emotes/emote_list.c
+   src/emotes/emote_info.c
+   src/emotes/emote.c
+)
+
+
 set (
    app_src
 
    ${req_src}
-   src/emote_list.c
-   src/emote_info.c
-   src/emote.c
+   ${emote_src}
 
    src/channel_view.c
    src/resources.c

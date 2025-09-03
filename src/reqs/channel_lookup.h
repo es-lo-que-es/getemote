@@ -2,7 +2,7 @@
 #define CHANNEL_LOOKUP_HEADER_H
 
 #include "request_handler.h"
-#include "emote_info.h"
+#include "emotes/emote_info.h"
 
 
 enum LookupState { NoLookup, LookupFailed, LookupDone, LookupWait };

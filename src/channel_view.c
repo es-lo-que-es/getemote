@@ -31,6 +31,9 @@ void request_channel_view(ChannelView *self, const char *username)
 
 static void draw_channel_emotes(ChannelView *self, Rectangle sr)
 {
+   const int len = emote_count(&self->emotes);
+   if ( len == 0 ) return;
+
    const int emotes_per_row = 7;
    sr = pad_rec(sr, (sr.width / emotes_per_row) * gconfig->emote_padding);
 
@@ -43,8 +46,6 @@ static void draw_channel_emotes(ChannelView *self, Rectangle sr)
    Rectangle r = { sr.x, sr.y, side, side };
 
    int i = 0;
-   const int len = emote_count(&self->emotes);
-
    while ( i < len ) {
       for ( int j = 0; j < emotes_per_row && i < len; ++j ) {
          draw_emote(get_emote_at(&self->emotes, i), r);
