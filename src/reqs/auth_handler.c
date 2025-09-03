@@ -85,8 +85,8 @@ static int process_empty_response(AuthHandler *self)
 
 static int process_auth_failure(AuthHandler *self)
 {
-   fprintf(stderr, "auth request has failed :( \n");
-   fprintf(stderr, "reason: '%s'\n", get(&self->auth_req->resp, 0));
+   fprintf(stderr, "auth request has failed ._.\n");
+   fprintf(stderr, "response: '%s'\n", get(&self->auth_req->resp, 0));
    self->failed = true;
 
    return AuthFailed;
@@ -140,7 +140,6 @@ enum AuthState wait_for_authorisation()
    if ( self->failed ) return AuthFailed;
    if ( self->done ) return AuthSuccess;
 
-   handle_requests();
    if ( self->auth_req->done ) {
       if ( empty_response(self->auth_req) ) status = process_empty_response(self);
       else if ( self->auth_req->failed ) status = process_auth_failure(self);

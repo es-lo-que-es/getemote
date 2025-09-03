@@ -1,16 +1,16 @@
 #include "app.h"
 
+#include "util.h"
 #include "raylib.h"
 #include "emote.h"
 #include "config.h"
 #include "resources.h"
-
-
-Emote emote = { 0 };
+#include "reqs/auth_handler.h"
 
 
 void release_app(App *self)
 {
+   release_channel_view(&self->channel_view);
    release_resources();
    CloseWindow();
 }
@@ -30,22 +30,51 @@ bool init_app(App *self)
 {
    if ( !load_resources() ) return false;
    init_window();
-
-   EmoteInfo info = { 0 };
-   init_emote_info(&info, "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_9c38e116e5e84f51b338ca0779ba7c2c/static/light/3.0", "twitchDino");
-   init_emote(&emote, info);
+   init_channel_view(&self->channel_view);
 
    return true;
 }
 
 
+static void draw_auth_waiting_screen()
+{
+   const Rectangle r = { 0, 0, gconfig->window_width, gconfig->window_height };
+   draw_loading_animation(r, gconfig->bg_alt);
+}
+
+
+static void draw_auth_failed_screen()
+{
+   const int fsize = gconfig->window_height * 0.06;
+   const char *text = "._. AUTH FAILED ._.";
+
+   const int w = MeasureText(text, fsize);
+   const int y = (gconfig->window_height - fsize) * 0.5;
+   const int x = (gconfig->window_width - w) * 0.5;
+   DrawText(text, x, y, fsize, gconfig->fg);
+}
+
+
+static void draw_app(App *self)
+{
+   if ( IsKeyReleased(KEY_ENTER) ) request_channel_view(&self->channel_view, "bar0sta");
+
+   const Rectangle r = { 0, 0, gconfig->window_width, gconfig->window_height };
+   draw_channel_view(&self->channel_view, r);
+}
+
+
 void run_app(App *self)
 {
-   const Rectangle r = { 100, 100, 256, 256 };
    handle_requests();
+   int auth = wait_for_authorisation();
 
    BeginDrawing();
-      ClearBackground(RAYWHITE);
-      draw_emote(&emote, r);
+      ClearBackground(gconfig->bg);
+
+      if ( auth == AuthWait ) draw_auth_waiting_screen();
+      else if ( auth == AuthFailed ) draw_auth_failed_screen();
+      else draw_app(self);
+
    EndDrawing();
 }

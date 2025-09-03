@@ -43,6 +43,10 @@ static void set_default_config()
 
 void load_config()
 {
+   config.fg = (Color) { 0xD1, 0xD7, 0xE0, 0xFF };
+   config.bg = (Color) { 0x15, 0x1B, 0x23, 0xFF };
+   config.bg_alt = (Color) { 0x21, 0x28, 0x30, 0xFF };
+
    json_error_t err = { 0 };
    json_t *doc = json_load_file(local_path("config.json"), 0, &err);
 

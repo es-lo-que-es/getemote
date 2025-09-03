@@ -1,9 +1,12 @@
 #ifndef APP_H_HEADER
 #define APP_H_HEADER
 
+#include "reqs/request_handler.h"
+#include "channel_view.h"
+
 
 typedef struct App {
-   int state;
+   ChannelView channel_view;
 } App;
 
 

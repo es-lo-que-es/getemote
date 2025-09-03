@@ -2,6 +2,7 @@
 
 #include "raymath.h"
 #include "config.h"
+#include "util.h"
 
 
 void release_emote(Emote *self)
@@ -25,6 +26,7 @@ static void set_failed_image(Emote *self)
 static bool load_cached_image(Emote *self, const char *name)
 {
    const char *path = TextFormat("%scache/%s.png", GetApplicationDirectory(), name);
+   if ( !FileExists(path) ) return false;
 
    self->image = LoadImage(path);
    self->texture = LoadTextureFromImage(self->image);
@@ -52,17 +54,16 @@ void init_emote(Emote *self, EmoteInfo info)
 }
 
 
-static void draw_loading_animation(Rectangle r)
+static void draw_emote_loading_animation(Rectangle r)
 {
-   // TODO: spinning circles or some shit
-   // ...
-
-   DrawRectangleRec(r, GREEN);
+   draw_loading_animation(r, gconfig->bg_alt);
 }
 
 
 static void cache_request_data(Emote *self)
 {
+   if ( !FileExists(local_path("cache")) ) MakeDirectory(local_path("cache"));
+
    FILE *file = fopen(TextFormat("%scache/%s.png", GetApplicationDirectory(), self->info.name), "wb");
    if ( file == NULL ) return;
 
@@ -74,7 +75,7 @@ static void cache_request_data(Emote *self)
 
 static void draw_loading_emote(Emote *self, Rectangle r)
 {
-   draw_loading_animation(r);
+   draw_emote_loading_animation(r);
 
    if ( !self->req->done ) return;
    if ( self->req->failed ) return set_failed_image(self);

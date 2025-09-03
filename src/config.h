@@ -1,9 +1,17 @@
 #ifndef CONFIG_HEADER_H
 #define CONFIG_HEADER_H
 
+#include "raylib.h"
+
+
 typedef struct Config {
+
    int window_height;
    int window_width;
+
+   Color fg, bg;
+   Color bg_alt;
+
 } Config;
 
 
