@@ -30,6 +30,7 @@ bool init_app(App *self)
    if ( !load_resources() ) return false;
    init_window();
    init_channel_view(&self->channel_view);
+   init_input_line(&self->inp);
 
    return true;
 }
@@ -56,10 +57,12 @@ static void draw_auth_failed_screen()
 
 static void draw_app(App *self)
 {
-   if ( IsKeyReleased(KEY_ENTER) ) request_channel_view(&self->channel_view, "bar0sta");
+   //if ( IsKeyReleased(KEY_ENTER) ) request_channel_view(&self->channel_view, "bar0sta");
 
    const Rectangle r = { 0, 0, gconfig->window_width, gconfig->window_height };
    draw_channel_view(&self->channel_view, r);
+
+   draw_input_line(&self->inp, (Rectangle) { 100, 100, 400, 64 });
 }
 
 
@@ -71,9 +74,12 @@ void run_app(App *self)
    BeginDrawing();
       ClearBackground(gconfig->bg);
 
+      /*
       if ( auth == AuthWait ) draw_auth_waiting_screen();
       else if ( auth == AuthFailed ) draw_auth_failed_screen();
-      else draw_app(self);
+      else 
+         */
+      draw_app(self);
 
    EndDrawing();
 }

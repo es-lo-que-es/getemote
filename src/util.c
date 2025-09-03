@@ -1,5 +1,7 @@
 #include "util.h"
+
 #include "math.h"
+#include "stdlib.h"
 
 
 #define RAD120 2.0944
@@ -48,4 +50,10 @@ Rectangle pad_rec(Rectangle r, float value)
    };
 
    return res;
+}
+
+
+void do_call(VCallback cb)
+{
+   if ( cb.call != NULL ) cb.call(cb.arg);
 }

@@ -24,10 +24,17 @@ set (
 
 
 set (
+   interface_src
+   src/interface/input_line.c
+)
+
+
+set (
    app_src
 
    ${req_src}
    ${emote_src}
+   ${interface_src}
 
    src/channel_view.c
    src/resources.c

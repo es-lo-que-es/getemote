@@ -3,10 +3,12 @@
 
 #include "reqs/request_handler.h"
 #include "channel_view.h"
+#include "interface/input_line.h"
 
 
 typedef struct App {
    ChannelView channel_view;
+   InputLine inp;
 } App;
 
 
