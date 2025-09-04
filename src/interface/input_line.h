@@ -8,6 +8,7 @@ typedef struct InputLine {
    
    char buffer[MAX_INPUT_LINE + 1];
    double last_delete;
+   bool updated;
 
    double last_blink;
    bool blink;

@@ -18,9 +18,13 @@ void init_input_line(InputLine *self)
 static void handle_input_delete(InputLine *self)
 {
    if ( IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_W) ) {
-      memset(self->buffer, 0, sizeof(self->buffer));
-      self->len = 0;
-      return;
+
+      if ( self->len > 0 ) {
+         memset(self->buffer, 0, sizeof(self->buffer));
+         self->updated = true;
+         self->len = 0;
+         return;
+      }
    }
 
    if ( !IsKeyDown(KEY_BACKSPACE) && !IsKeyDown(KEY_DELETE) ) return;
@@ -31,17 +35,27 @@ static void handle_input_delete(InputLine *self)
 
    self->buffer[--self->len] = 0;
    self->last_delete = now;
+
+   self->updated = true;
 }
 
 
 static void handle_input_line(InputLine *self)
 {
+   self->updated = false;
+
    handle_input_delete(self);
    int key = GetCharPressed();
 
    while ( key > 0 ) {
+
       if ( self->len >= MAX_INPUT_LINE ) return;
-      if ( key <= 127 ) self->buffer[self->len++] = key;
+
+      if ( key <= 127 ) {
+         self->buffer[self->len++] = key;
+         self->updated = true;
+      }
+
       key = GetCharPressed();
    }
 }

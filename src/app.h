@@ -2,13 +2,13 @@
 #define APP_H_HEADER
 
 #include "reqs/request_handler.h"
+#include "interface/search_bar.h"
 #include "channel_view.h"
-#include "interface/input_line.h"
 
 
 typedef struct App {
    ChannelView channel_view;
-   InputLine inp;
+   SearchBar search;
 } App;
 
 

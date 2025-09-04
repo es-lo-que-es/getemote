@@ -12,6 +12,7 @@ typedef struct VCallback {
    void *arg;
 } VCallback;
 
+void screen_shot_rec(Rectangle r);
 void do_call(VCallback cb);
 
 #endif

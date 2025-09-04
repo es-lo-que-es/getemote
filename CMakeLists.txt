@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 project(getemote)
 
@@ -26,6 +26,7 @@ set (
 set (
    interface_src
    src/interface/input_line.c
+   src/interface/search_bar.c
 )
 
 

@@ -30,7 +30,7 @@ bool init_app(App *self)
    if ( !load_resources() ) return false;
    init_window();
    init_channel_view(&self->channel_view);
-   init_input_line(&self->inp);
+   init_search_bar(&self->search);
 
    return true;
 }
@@ -61,8 +61,7 @@ static void draw_app(App *self)
 
    const Rectangle r = { 0, 0, gconfig->window_width, gconfig->window_height };
    draw_channel_view(&self->channel_view, r);
-
-   draw_input_line(&self->inp, (Rectangle) { 100, 100, 400, 64 });
+   draw_search_bar(&self->search, (Rectangle) { 100, 100, 400, 64 });
 }
 
 

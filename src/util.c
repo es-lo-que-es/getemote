@@ -2,6 +2,8 @@
 
 #include "math.h"
 #include "stdlib.h"
+#include "stdio.h"
+#include "raylib.h"
 
 
 #define RAD120 2.0944
@@ -56,4 +58,38 @@ Rectangle pad_rec(Rectangle r, float value)
 void do_call(VCallback cb)
 {
    if ( cb.call != NULL ) cb.call(cb.arg);
+}
+
+
+// WARNING: this is insecure and platform specific implementation
+// basically u can redefine xclip to whatever command u need and this app will execute it
+// but since i doubt anyone but me will ever use this for know it will do just fine
+static void dump_to_clipboard(unsigned char *data, int size)
+{
+   FILE* xclip = popen("xclip -selection clipboard -t image/png", "w");
+   if ( xclip == NULL ) return;
+
+   fwrite(data, 1, size, xclip);
+   pclose(xclip);
+}
+
+
+void screen_shot_rec(Rectangle r)
+{
+   Image image = LoadImageFromScreen();
+   if ( !IsImageValid(image) ) return;
+
+   Image part = ImageFromImage(image, r);
+   if ( !IsImageValid(part) ) return UnloadImage(image);
+
+   int data_size = 0;
+   unsigned char *buffer = ExportImageToMemory(part, ".png", &data_size);
+
+   if ( buffer != NULL ) {
+      dump_to_clipboard(buffer, data_size);
+      free(buffer);
+   }
+
+   UnloadImage(image);
+   UnloadImage(part);
 }
