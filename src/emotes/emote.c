@@ -56,7 +56,7 @@ void init_emote(Emote *self, EmoteInfo info)
 
 static void draw_emote_loading_animation(Rectangle r)
 {
-   draw_loading_animation(r, gconfig->bg_alt);
+   DrawRectangleRec(scale_rec(r, 0.5), gconfig->bg_alt);
 }
 
 
@@ -94,7 +94,6 @@ static void draw_loading_emote(Emote *self, Rectangle r)
 
 void draw_emote(Emote *self, Rectangle r)
 {
-
    bool hover = CheckCollisionPointRec(GetMousePosition(), r);
    if ( hover ) DrawRectangleRec(r, gconfig->fg_alt);
 
@@ -103,4 +102,18 @@ void draw_emote(Emote *self, Rectangle r)
 
    const Rectangle src = { 0, 0, self->texture.width, self->texture.height };
    DrawTexturePro(self->texture, src, sr, Vector2Zero(), 0, WHITE);
+}
+
+
+void draw_emote_raw(Emote *self, Rectangle r)
+{
+   if ( !self->loaded ) return draw_loading_emote(self, r);
+   const Rectangle src = { 0, 0, self->texture.width, self->texture.height };
+   DrawTexturePro(self->texture, src, r, Vector2Zero(), 0, WHITE);
+}
+
+
+void copy_emote(Emote *self, Rectangle r)
+{
+   copy_image(self->image, r);
 }

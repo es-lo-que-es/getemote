@@ -20,7 +20,7 @@ static void init_window()
    InitWindow(gconfig->window_width, gconfig->window_height, "getemote");
    SetConfigFlags(FLAG_WINDOW_UNDECORATED);
 
-   //SetExitKey(KEY_NULL);
+   SetExitKey(KEY_NULL);
    SetTargetFPS(30);
 }
 
@@ -77,10 +77,8 @@ void run_app(App *self)
 
    BeginDrawing();
       ClearBackground(gconfig->bg);
-
       if ( auth == AuthWait ) draw_auth_waiting_screen();
       else if ( auth == AuthFailed ) draw_auth_failed_screen();
       else draw_app(self);
-
    EndDrawing();
 }

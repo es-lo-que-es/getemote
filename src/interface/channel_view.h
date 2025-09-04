@@ -11,8 +11,8 @@ typedef struct ChannelView {
    ChannelLookup lookup;
    EmoteList emotes;
 
+   int yoffset, selected;
    Rectangle r;
-   int yoffset;
 
 } ChannelView;
 

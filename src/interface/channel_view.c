@@ -1,4 +1,5 @@
 #include "channel_view.h"
+#include "single_view.h"
 
 #include "config.h"
 #include "string.h"
@@ -19,6 +20,8 @@ void init_channel_view(ChannelView *self, Rectangle r)
    memset(self, 0, sizeof(ChannelView));
    init_channel_lookup(&self->lookup);
    init_emote_list(&self->emotes);
+
+   self->selected = -1;
    self->r = r;
 }
 
@@ -51,8 +54,14 @@ static void draw_channel_emotes(ChannelView *self)
 
    while ( i < len ) {
       for ( int j = 0; j < EMOTES_PER_ROW && i < len; ++j ) {
+
+         if ( IsMouseButtonReleased(MOUSE_BUTTON_LEFT) ) {
+            if ( CheckCollisionPointRec(GetMousePosition(), r) ) self->selected = i;
+         }
+
          draw_emote(get_emote_at(&self->emotes, i), r);
          r.x += side;
+
          ++i;
       }
 
@@ -82,6 +91,12 @@ static void handle_scroll(ChannelView *self)
 
 void draw_channel_view(ChannelView *self)
 {
+   if ( IsKeyReleased(KEY_ESCAPE) ) self->selected = -1;
+
+   if ( get_emote_at(&self->emotes, self->selected) ) {
+      return draw_single_view(get_emote_at(&self->emotes, self->selected), self->r);
+   }
+
    if ( self->lookup.state == LookupWait ) {
       draw_loading_animation(self->r, gconfig->bg_alt);
 

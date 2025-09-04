@@ -74,22 +74,26 @@ static void dump_to_clipboard(unsigned char *data, int size)
 }
 
 
-void screen_shot_rec(Rectangle r)
+void copy_image(Image source, Rectangle r)
 {
-   Image image = LoadImageFromScreen();
-   if ( !IsImageValid(image) ) return;
+   Image img = ImageCopy(source);
 
-   Image part = ImageFromImage(image, r);
-   if ( !IsImageValid(part) ) return UnloadImage(image);
+   if ( !IsImageValid(img) ) return;
+   ImageResize(&img, r.width, r.height);
 
    int data_size = 0;
-   unsigned char *buffer = ExportImageToMemory(part, ".png", &data_size);
+   unsigned char *buffer = ExportImageToMemory(img, ".png", &data_size);
 
    if ( buffer != NULL ) {
       dump_to_clipboard(buffer, data_size);
       free(buffer);
    }
 
-   UnloadImage(image);
-   UnloadImage(part);
+   UnloadImage(img);
+}
+
+
+bool valid_index(int idx, int len)
+{
+   return idx >= 0 && idx < len;
 }

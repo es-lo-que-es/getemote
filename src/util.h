@@ -12,7 +12,11 @@ typedef struct VCallback {
    void *arg;
 } VCallback;
 
-void screen_shot_rec(Rectangle r);
+
+// INFO: copies image to the clipboard
+void copy_image(Image image, Rectangle r);
+
+bool valid_index(int idx, int len);
 void do_call(VCallback cb);
 
 #endif
