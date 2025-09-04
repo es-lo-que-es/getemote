@@ -27,29 +27,30 @@ void request_channel_view(ChannelView *self, const char *username)
 {
    lookup_channel_emotes(&self->lookup, username);
    clear_emote_list(&self->emotes);
+   self->yoffset = 0;
 }
 
 
+#define EMOTES_PER_ROW 7
 static void draw_channel_emotes(ChannelView *self)
 {
    Rectangle sr = self->r;
    const int len = emote_count(&self->emotes);
    if ( len == 0 ) return;
 
-   const int emotes_per_row = 7;
-   sr = pad_rec(sr, (sr.width / emotes_per_row) * gconfig->emote_padding);
-
+   sr = pad_rec(sr, (sr.width / EMOTES_PER_ROW) * gconfig->emote_padding);
    const float fsize = fmaxf(sr.height * 0.05, 14);
    DrawText("channel emotes:", sr.x, sr.y, fsize, gconfig->fg);
    sr.y += fsize * 1.25;
 
-   const float side = sr.width / emotes_per_row;
-   const float required_width = side * emotes_per_row;
+   const float side = sr.width / EMOTES_PER_ROW;
+   const float required_width = side * EMOTES_PER_ROW;
    Rectangle r = { sr.x, sr.y, side, side };
 
-   int i = 0;
+   int i = 0 + (self->yoffset * EMOTES_PER_ROW);
+
    while ( i < len ) {
-      for ( int j = 0; j < emotes_per_row && i < len; ++j ) {
+      for ( int j = 0; j < EMOTES_PER_ROW && i < len; ++j ) {
          draw_emote(get_emote_at(&self->emotes, i), r);
          r.x += side;
          ++i;
@@ -57,6 +58,24 @@ static void draw_channel_emotes(ChannelView *self)
 
       r.y += side;
       r.x = sr.x; 
+   }
+}
+
+
+static void handle_scroll(ChannelView *self)
+{
+   const int len = emote_count(&self->emotes);
+   const int max = fmaxf((len / EMOTES_PER_ROW) - 1, 0);
+
+   bool scroll_down = GetMouseWheelMove() < 0;
+   bool scroll_up = GetMouseWheelMove() > 0;
+
+   if ( IsKeyPressed(KEY_DOWN) || scroll_down ) {
+      self->yoffset = fminf(self->yoffset + 1, max);
+   }
+
+   if ( IsKeyPressed(KEY_UP) || scroll_up ) {
+      self->yoffset = fmaxf(self->yoffset - 1, 0);
    }
 }
 
@@ -74,6 +93,7 @@ void draw_channel_view(ChannelView *self)
 
    } else {
       draw_channel_emotes(self);
+      handle_scroll(self);
    }
 
    handle_channel_lookup(&self->lookup);
