@@ -25,8 +25,10 @@ set (
 
 set (
    interface_src
+   src/interface/channel_view.c
    src/interface/input_line.c
    src/interface/search_bar.c
+   src/interface/interface.c
 )
 
 
@@ -37,7 +39,6 @@ set (
    ${emote_src}
    ${interface_src}
 
-   src/channel_view.c
    src/resources.c
    src/config.c
    src/main.c

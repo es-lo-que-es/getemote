@@ -71,3 +71,9 @@ error:
    set_default_config();
    json_decref(doc);
 }
+
+
+Rectangle app_rec()
+{
+   return (Rectangle) { 0, 0, config.window_width, config.window_height };
+}

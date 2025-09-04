@@ -14,11 +14,12 @@ void release_channel_view(ChannelView *self)
 }
 
 
-void init_channel_view(ChannelView *self)
+void init_channel_view(ChannelView *self, Rectangle r)
 {
    memset(self, 0, sizeof(ChannelView));
    init_channel_lookup(&self->lookup);
    init_emote_list(&self->emotes);
+   self->r = r;
 }
 
 
@@ -29,8 +30,9 @@ void request_channel_view(ChannelView *self, const char *username)
 }
 
 
-static void draw_channel_emotes(ChannelView *self, Rectangle sr)
+static void draw_channel_emotes(ChannelView *self)
 {
+   Rectangle sr = self->r;
    const int len = emote_count(&self->emotes);
    if ( len == 0 ) return;
 
@@ -59,10 +61,10 @@ static void draw_channel_emotes(ChannelView *self, Rectangle sr)
 }
 
 
-void draw_channel_view(ChannelView *self, Rectangle r)
+void draw_channel_view(ChannelView *self)
 {
    if ( self->lookup.state == LookupWait ) {
-      draw_loading_animation(r, gconfig->bg_alt);
+      draw_loading_animation(self->r, gconfig->bg_alt);
 
    } else if ( self->lookup.state == LookupDone ) {
       fill_emote_list_from_info(&self->emotes, consume_lookup_result(&self->lookup));
@@ -71,7 +73,7 @@ void draw_channel_view(ChannelView *self, Rectangle r)
       DrawText("._. lookup has failed ._.", 20, 20, 24, gconfig->fg);
 
    } else {
-      draw_channel_emotes(self, r);
+      draw_channel_emotes(self);
    }
 
    handle_channel_lookup(&self->lookup);

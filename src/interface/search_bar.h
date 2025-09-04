@@ -9,11 +9,16 @@ typedef struct SearchBar {
 
    VCallback on_enter;
    VCallback on_input;
+
    InputLine inp;
+   Rectangle r;
 
 } SearchBar;
 
-void draw_search_bar(SearchBar *bar, Rectangle r);
-void init_search_bar(SearchBar *bar);
+
+void init_search_bar(SearchBar *bar, Rectangle r);
+
+const char *search_bar_value(SearchBar *bar);
+void draw_search_bar(SearchBar *bar);
 
 #endif

@@ -1,14 +1,10 @@
 #ifndef APP_H_HEADER
 #define APP_H_HEADER
 
-#include "reqs/request_handler.h"
-#include "interface/search_bar.h"
-#include "channel_view.h"
-
+#include "interface/interface.h"
 
 typedef struct App {
-   ChannelView channel_view;
-   SearchBar search;
+   Interface ui;
 } App;
 
 

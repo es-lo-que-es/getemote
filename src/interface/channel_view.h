@@ -10,15 +10,17 @@ typedef struct ChannelView {
 
    ChannelLookup lookup;
    EmoteList emotes;
+
+   Rectangle r;
    int yoffset;
 
 } ChannelView;
 
 
 void request_channel_view(ChannelView *chview, const char *username);
-void draw_channel_view(ChannelView *chview, Rectangle r);
+void init_channel_view(ChannelView *chview, Rectangle r);
 
 void release_channel_view(ChannelView *chview);
-void init_channel_view(ChannelView *chview);
+void draw_channel_view(ChannelView *chview);
 
 #endif

@@ -17,6 +17,7 @@ typedef struct Config {
 
 
 const char *local_path(const char *filename);
+Rectangle app_rec();
 
 extern const Config *gconfig;
 void load_config();
