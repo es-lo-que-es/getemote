@@ -27,6 +27,7 @@ set (
    interface_src
    src/interface/channel_view.c
    src/interface/single_view.c
+   src/interface/recent_view.c
    src/interface/input_line.c
    src/interface/search_bar.c
    src/interface/interface.c

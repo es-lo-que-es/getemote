@@ -34,7 +34,6 @@ void request_channel_view(ChannelView *self, const char *username)
 }
 
 
-#define EMOTES_PER_ROW 7
 static void draw_channel_emotes(ChannelView *self)
 {
    Rectangle sr = self->r;

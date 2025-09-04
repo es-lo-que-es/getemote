@@ -22,4 +22,6 @@ Rectangle app_rec();
 extern const Config *gconfig;
 void load_config();
 
+#define EMOTES_PER_ROW 7
+
 #endif

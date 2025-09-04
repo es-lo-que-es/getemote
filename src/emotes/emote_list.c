@@ -78,3 +78,9 @@ void init_emote_list(EmoteList *self)
 {
    init(&self->data);
 }
+
+
+bool add_emote_to_list(EmoteList *self, Emote emote)
+{
+   return push(&self->data, emote);
+}

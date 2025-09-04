@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "config.h"
 #include "resources.h"
+
 #include "reqs/auth_handler.h"
 
 
@@ -32,6 +33,13 @@ static void search_enter_cb(App *self)
 }
 
 
+static void search_input_cb(App *self)
+{
+   const char *value = search_bar_value(&self->ui.search);
+   update_recent_view(&self->ui.recent_view, value);
+}
+
+
 bool init_app(App *self)
 {
    if ( !load_resources() ) return false;
@@ -40,6 +48,7 @@ bool init_app(App *self)
    init_interface(&self->ui);
    // INFO: setting up ui callbacks
    self->ui.search.on_enter = (VCallback){.call = (void*)search_enter_cb, .arg = self};
+   self->ui.search.on_input = (VCallback){.call = (void*)search_input_cb, .arg = self};
 
    return true;
 }
@@ -77,8 +86,11 @@ void run_app(App *self)
 
    BeginDrawing();
       ClearBackground(gconfig->bg);
+      /*
       if ( auth == AuthWait ) draw_auth_waiting_screen();
       else if ( auth == AuthFailed ) draw_auth_failed_screen();
-      else draw_app(self);
+      else 
+         */
+         draw_app(self);
    EndDrawing();
 }

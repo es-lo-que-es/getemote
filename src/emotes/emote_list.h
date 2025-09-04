@@ -12,6 +12,7 @@ void fill_emote_list_from_info(EmoteList *emlist, vec(EmoteInfo) infos);
 void release_emote_list(EmoteList *emlist);
 void init_emote_list(EmoteList *emlist);
 
+bool add_emote_to_list(EmoteList *emlist, Emote emote);
 Emote *get_emote_at(EmoteList *emlist, int at);
 int emote_count(EmoteList *emlist);
 
