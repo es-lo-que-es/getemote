@@ -132,7 +132,7 @@ void draw_recent_view(RecentView *self)
    if ( IsKeyReleased(KEY_ESCAPE) ) self->selected = -1;
 
    if ( get_emote_at(&self->emotes, self->selected) ) {
-      return draw_single_view(get_emote_at(&self->emotes, self->selected), self->r);
+      return draw_single_view(get_emote_at(&self->emotes, self->selected));
    }
 
    const int len = fminf(emote_count(&self->emotes), MAX_RECENT);

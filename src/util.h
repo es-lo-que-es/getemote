@@ -14,6 +14,7 @@ typedef struct VCallback {
 
 
 // INFO: copies image to the clipboard
+void draw_centered_text(const char *txt, Rectangle r, int fsize, Color col);
 void copy_image(Image image, Rectangle r);
 
 bool valid_index(int idx, int len);

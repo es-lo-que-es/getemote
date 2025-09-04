@@ -97,3 +97,14 @@ bool valid_index(int idx, int len)
 {
    return idx >= 0 && idx < len;
 }
+
+
+void draw_centered_text(const char *text, Rectangle r, int fsize, Color col)
+{
+   const float w = fmaxf(MeasureText(text, fsize), 1);
+
+   const float y = r.y + (r.height - fsize) * 0.5;
+   const float x = r.x + (r.width - w) * 0.5;
+
+   DrawText(text, x, y, fsize, col);
+}

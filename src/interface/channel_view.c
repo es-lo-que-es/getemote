@@ -93,7 +93,7 @@ void draw_channel_view(ChannelView *self)
    if ( IsKeyReleased(KEY_ESCAPE) ) self->selected = -1;
 
    if ( get_emote_at(&self->emotes, self->selected) ) {
-      return draw_single_view(get_emote_at(&self->emotes, self->selected), self->r);
+      return draw_single_view(get_emote_at(&self->emotes, self->selected));
    }
 
    if ( self->lookup.state == LookupWait ) {

@@ -26,11 +26,16 @@ static bool handle_rec_input(Rectangle r)
 }
 
 
-void draw_single_view(Emote *emote, Rectangle r)
+void draw_single_view(Emote *emote)
 {
+   const Rectangle r = app_rec();
    const float p = r.height * 0.1;
 
-   const Rectangle r0 = get_centered_rec_at(r.y + p, r.width, 24);
+   const float fsize = r.height * 0.05;
+   const Rectangle tr = { r.x, r.y + fsize, r.width, fsize };
+   draw_centered_text(emote->info.name, tr, fsize, gconfig->fg);
+
+   const Rectangle r0 = get_centered_rec_at(tr.y + fsize + p, r.width, 24);
    const Rectangle r1 = get_centered_rec_at(r0.y + r0.height + p, r.width, 48);
    const Rectangle r2 = get_centered_rec_at(r1.y + r1.height + p, r.width, 72);
 

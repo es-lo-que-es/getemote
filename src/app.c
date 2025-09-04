@@ -18,6 +18,8 @@ void release_app(App *self)
 
 static void init_window()
 {
+   SetTraceLogLevel(LOG_ERROR);
+
    InitWindow(gconfig->window_width, gconfig->window_height, "getemote");
    SetConfigFlags(FLAG_WINDOW_UNDECORATED);
 
@@ -86,11 +88,8 @@ void run_app(App *self)
 
    BeginDrawing();
       ClearBackground(gconfig->bg);
-      /*
       if ( auth == AuthWait ) draw_auth_waiting_screen();
       else if ( auth == AuthFailed ) draw_auth_failed_screen();
-      else 
-         */
-         draw_app(self);
+      else draw_app(self);
    EndDrawing();
 }
