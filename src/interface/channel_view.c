@@ -103,7 +103,8 @@ void draw_channel_view(ChannelView *self)
       fill_emote_list_from_info(&self->emotes, consume_lookup_result(&self->lookup));
 
    } else if ( self->lookup.state == LookupFailed ) {
-      DrawText("._. lookup has failed ._.", 20, 20, 24, gconfig->fg);
+      const Rectangle tr = { self->r.x, self->r.y, self->r.width, self->r.height * 0.07 };
+      draw_centered_text("._. channel lookup has failed ._.", tr, tr.height, gconfig->bg_alt);
 
    } else {
       draw_channel_emotes(self);
