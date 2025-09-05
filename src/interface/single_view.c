@@ -32,12 +32,15 @@ void draw_single_view(Emote *emote)
    const float p = r.height * 0.1;
 
    const float fsize = r.height * 0.05;
-   const Rectangle tr = { r.x, r.y + fsize, r.width, fsize };
+   const float genh = fsize * 2 + 32 + 64 + 128 + p * 3;
+   const float y = r.y + (r.height - genh) * 0.5;
+
+   const Rectangle tr = { r.x, y + fsize, r.width, fsize };
    draw_centered_text(emote->info.name, tr, fsize, gconfig->fg);
 
-   const Rectangle r0 = get_centered_rec_at(tr.y + fsize + p, r.width, 32);
+   const Rectangle r0 = get_centered_rec_at(tr.y + fsize + p, r.width, 128);
    const Rectangle r1 = get_centered_rec_at(r0.y + r0.height + p, r.width, 64);
-   const Rectangle r2 = get_centered_rec_at(r1.y + r1.height + p, r.width, 128);
+   const Rectangle r2 = get_centered_rec_at(r1.y + r1.height + p, r.width, 32);
 
    if ( handle_rec_input(r0) ) copy_emote(emote, r0);
    if ( handle_rec_input(r1) ) copy_emote(emote, r1);
