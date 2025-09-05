@@ -3,6 +3,7 @@
 #include "jansson.h"
 #include "assert.h"
 #include "raylib.h"
+#include "config.h"
 #include "stdio.h"
 
 
@@ -60,8 +61,10 @@ bool init_auth_handler()
    AuthHandler *self = &s_auth_handler;
    memset(self, 0, sizeof(AuthHandler));
    
-   if ( !read_file(CLIENT_ID_PATH, self->client_id, sizeof(self->client_id)) ) return false;
-   if ( !read_file(CLIENT_SECRET_PATH, self->client_secret, sizeof(self->client_secret)) ) return false;
+   if ( !read_file(local_path(CLIENT_ID_PATH), self->client_id, sizeof(self->client_id)) ) return false;
+   if ( !read_file(local_path(CLIENT_SECRET_PATH), self->client_secret, sizeof(self->client_secret)) ) {
+      return false;
+   }
 
    const char *data = TextFormat("client_id=%s&client_secret=%s&%s", 
          self->client_id, self->client_secret, GRANT_TYPE_STR);
