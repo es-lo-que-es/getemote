@@ -17,6 +17,7 @@ set (
 
 set (
    emote_src
+   src/emotes/url_lookup.c
    src/emotes/emote_list.c
    src/emotes/emote_info.c
    src/emotes/emote.c
