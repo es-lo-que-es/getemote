@@ -1,5 +1,6 @@
 #include "emote.h"
 
+#include "url_lookup.h"
 #include "raymath.h"
 #include "config.h"
 #include "util.h"
@@ -63,6 +64,7 @@ static void draw_emote_loading_animation(Rectangle r)
 static void cache_request_data(Emote *self)
 {
    if ( !FileExists(local_path("cache")) ) MakeDirectory(local_path("cache"));
+   append_url_lookup(self->info.name, self->info.url);
 
    FILE *file = fopen(TextFormat("%scache/%s.png", GetApplicationDirectory(), self->info.name), "wb");
    if ( file == NULL ) return;
@@ -113,7 +115,31 @@ void draw_emote_raw(Emote *self, Rectangle r)
 }
 
 
-void copy_emote(Emote *self, Rectangle r)
+static char url_buffer[512] = { 0 };
+void copy_emote(Emote *self, Rectangle r, int lvl)
 {
+   const char *lookup = lookup_url(self->info.name);
+   if ( !lookup ) goto fallback;
+
+   // copy url to static buffer
+   const size_t len = strlen(lookup);
+   if ( len >= sizeof(url_buffer) || len < 4 ) goto fallback;
+   memcpy(url_buffer, lookup, len);
+   url_buffer[len - 3] = 0;
+   
+   const char *str = TextFormat("%s/%d.0", url_buffer, lvl); 
+
+   Request *req = make_locking_get_request(str, NULL);
+   if ( empty_response(req) || req->failed ) { release_request(req); goto fallback; }
+
+   Image image = LoadImageFromMemory(".png", get(&req->resp, 0), size(&req->resp));
+   if ( !IsImageValid(image) ) { release_request(req); goto fallback; }
+
+   copy_image(image, (Rectangle){0, 0, image.width, image.height});
+   release_request(req);
+   UnloadImage(image);
+   return;
+
+fallback:
    copy_image(self->image, r);
 }

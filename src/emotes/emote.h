@@ -18,9 +18,11 @@ typedef struct Emote {
 
 } Emote;
 
+
+void copy_emote(Emote *emote, Rectangle r, int lvl);
+
 void draw_emote_raw(Emote *emote, Rectangle r);
 void draw_emote(Emote *emote, Rectangle r);
-void copy_emote(Emote *emote, Rectangle r);
 
 void init_emote(Emote *emote, EmoteInfo info);
 void release_emote(Emote *emote);

@@ -8,6 +8,7 @@ typedef struct RequestHandler {
    CURLM *mhandle;
 } RequestHandler;
 
+Request *make_locking_get_request(const char *url, struct curl_slist *headers);
 
 Request *make_post_request(const char *url, const char *data, struct curl_slist *headers);
 Request *make_get_request(const char *url, struct curl_slist *headers);
@@ -18,6 +19,5 @@ bool init_request_handler();
 void handle_requests();
 
 int active_requests();
-
 
 #endif

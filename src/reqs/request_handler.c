@@ -154,3 +154,16 @@ int active_requests()
    RequestHandler *self = &s_request_handler;
    return size(&self->requests);
 }
+
+
+Request *make_locking_get_request(const char *url, struct curl_slist *headers)
+{
+   Request *req = _alloc_get_request(url, headers);
+   if ( req == NULL ) return NULL;
+   
+   int err = curl_easy_perform(req->ehandle);
+   if ( err ) req->failed = true;
+
+   req->done = true;
+   return req;
+}

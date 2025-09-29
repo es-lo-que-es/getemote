@@ -42,9 +42,9 @@ void draw_single_view(Emote *emote)
    const Rectangle r1 = get_centered_rec_at(r0.y + r0.height + p, r.width, 64);
    const Rectangle r2 = get_centered_rec_at(r1.y + r1.height + p, r.width, 32);
 
-   if ( handle_rec_input(r0) ) copy_emote(emote, r0);
-   if ( handle_rec_input(r1) ) copy_emote(emote, r1);
-   if ( handle_rec_input(r2) ) copy_emote(emote, r2);
+   if ( handle_rec_input(r0) ) copy_emote(emote, r0, 3);
+   if ( handle_rec_input(r1) ) copy_emote(emote, r1, 2);
+   if ( handle_rec_input(r2) ) copy_emote(emote, r2, 1);
 
    draw_emote_raw(emote, r0);
    draw_emote_raw(emote, r1);
